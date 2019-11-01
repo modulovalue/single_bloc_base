@@ -8,12 +8,12 @@ abstract class BlocBase {
 }
 
 /// Base class for objects that can be initialized.
-abstract class Initializable {
+abstract class InitBase {
   Future<void> init();
 }
 
 /// Base class for objects that can be initialized and disposed.
-abstract class InitBloc implements BlocBase, Initializable {}
+abstract class InitBloc implements BlocBase, InitBase {}
 
 class BaggedInitBloc implements InitBloc {
   final List<Future<void> Function()> onInit = [];
