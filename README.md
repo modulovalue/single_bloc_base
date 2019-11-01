@@ -39,7 +39,7 @@ class ExampleBlocWithInit implements InitBloc {
   }
 }
 ```
-- Disposable & Initializable Blocs:
+- Bagged Initializable Blocs
 ```dart
 class ExampleBaggedBloc extends BaggedInitBloc {
   ExampleBaggedBloc(Iterable<BlocBase> blocs,
