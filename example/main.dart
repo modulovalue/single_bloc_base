@@ -59,13 +59,11 @@ class ExampleBlocWithInit implements InitBloc {
 }
 
 class ExampleHookBloc extends HookBloc {
-  final MyOtherBloc otherBloc = MyOtherBloc(onInit: HookBloc.disposeBloc);
+  final MyOtherBloc otherBloc = HookBloc.disposeBloc(MyOtherBloc());
 }
 
 class MyOtherBloc extends BlocBase {
-  MyOtherBloc({void Function(BlocBase) onInit}) {
-    onInit(this);
-  }
+  MyOtherBloc() {}
 
   @override
   Future<void> dispose() async {

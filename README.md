@@ -15,7 +15,7 @@ class ExampleBloc implements BlocBase {
   }
 }
 ```
-- Initializable Objects; 
+- Initializable Objects:
 ```dart
 class ExampleInit implements InitBase {
   const ExampleInit();
@@ -53,14 +53,16 @@ class ExampleBaggedBloc extends BaggedInitBloc {
 ```
 - Hook Blocs that give you the ability to schedule objects for disposal in one line during their initialization:
 ```dart
-
 class ExampleHookBloc extends HookBloc {
-  final MyOtherBloc otherBloc = MyOtherBloc(onInit: HookBloc.disposeBloc);
+  final MyOtherBloc otherBloc = HookBloc.disposeBloc(MyOtherBloc());
 }
 
 class MyOtherBloc extends BlocBase {
-  MyOtherBloc({void Function(BlocBase) onInit}) {
-    onInit(this);
+  MyOtherBloc() {}
+
+  @override
+  Future<void> dispose() async {
+    print("MyOtherBloc dispose");
   }
 }
 ```

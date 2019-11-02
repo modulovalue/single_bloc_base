@@ -64,25 +64,28 @@ class HookBloc implements BlocBase {
   /// ```
   /// final SomeObject object = SomeObject(onInit: HookBloc.disposeSink);
   /// ```
-  static void disposeSink(Sink sink) {
-    disposeEffect(() async => sink.close());
+  static T disposeSink<T extends Sink<dynamic>>(T sink) {
+    disposeEffect<T>(sink, (a) async => sink.close());
+    return sink;
   }
 
   /// See [disposeSink]
-  static void disposeBloc(BlocBase bloc) {
-    disposeEffect(bloc.dispose);
+  static T disposeBloc<T extends BlocBase>(T bloc) {
+    disposeEffect<T>(bloc, (a) => a.dispose());
+    return bloc;
   }
 
   /// See [disposeSink]
-  static void disposeEffect(Future<void> Function() effect) {
+  static T disposeEffect<T>(T t, Future<void> Function(T) effect) {
     scheduleMicrotask(() {
       if (_context != null) {
-        _context.disposeLater(effect);
+        _context.disposeLater(() => effect(t));
       } else {
         throw Exception(
             "HookBloc.disposeSink used outside of class member contructor.");
       }
     });
+    return t;
   }
 
   HookBloc() {

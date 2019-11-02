@@ -4,12 +4,13 @@ import 'package:test/test.dart';
 
 List<String> _events = [];
 
+// ignore: avoid_void_async
 void main() async {
   group("$HookBloc", () {
     test("exception", () async {
       var threw = false;
       runZoned(() {
-        HookBloc.disposeEffect(() async {});
+        HookBloc.disposeEffect<void>(null, (_) async {});
       }, onError: (dynamic err) {
         threw = true;
       });
