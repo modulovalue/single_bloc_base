@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 
 /// Base interface for objects that can be disposed.
 abstract class BlocBase {
-  Future<void> dispose() async {}
+  Future<void> dispose();
 }
 
 /// Base interface for objects that can be initialized.

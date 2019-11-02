@@ -4,14 +4,25 @@ import 'package:test/test.dart';
 
 List<String> _events = [];
 
-void main() {
+void main() async {
+  group("$HookBloc", () {
+    test("exception", () async {
+      var threw = false;
+      runZoned(() {
+        HookBloc.disposeEffect(() async {});
+      }, onError: (dynamic err) {
+        threw = true;
+      });
+      await pumpEventQueue(times: 1);
+      expect(threw, true);
+    });
+  });
+
+  await pumpEventQueue(times: 2);
+
   group("$BlocBase", () {
     // Nothing to test
-    final sut = _BlocBase();
-    // for coverage, nothing to test
-    test("dispose", () async {
-      await sut.dispose();
-    });
+    final _ = _BlocBase();
   });
 
   group("$InitBase", () {
