@@ -7,7 +7,11 @@ List<String> _events = [];
 void main() {
   group("$BlocBase", () {
     // Nothing to test
-    final _ = _BlocBase();
+    final sut = _BlocBase();
+    // for coverage, nothing to test
+    test("dispose", () async {
+      await sut.dispose();
+    });
   });
 
   group("$InitBase", () {
@@ -91,6 +95,14 @@ void main() {
         ]);
       });
     });
+    test("disposeSinkLater", () async {
+      _events = [];
+      final bloc1 = _HookBloc();
+      var closed = 0;
+      bloc1.disposeSinkLater(_Sink(() => closed++));
+      await bloc1.dispose();
+      expect(closed, 1);
+    });
   });
 }
 
@@ -131,6 +143,20 @@ class _AnonTestInitBloc extends InitBloc {
 
 class _TestBaggedInitBlocBase extends BaggedInitBloc {}
 
+class _HookBloc extends HookBloc {}
+
+class _Sink implements Sink<String> {
+  final void Function() _close;
+
+  _Sink(this._close);
+
+  @override
+  Future<void> add(String data) async {}
+
+  @override
+  void close() => _close();
+}
+
 class _HookBlocBase1 extends HookBloc {
   // ignore: close_sinks
   final _ConstructorCall a =
@@ -147,7 +173,7 @@ class _HookBlocBase1 extends HookBloc {
 class _HookBlocBase2 extends HookBloc {
   // ignore: close_sinks
   final _ConstructorCall a =
-      _ConstructorCall("_HookBlocBase2", HookBloc.disposeSink);
+      _ConstructorCall("_HookBlocBase2", HookBloc.disposeBloc);
 
   @override
   Future dispose() async {
@@ -157,7 +183,7 @@ class _HookBlocBase2 extends HookBloc {
   }
 }
 
-class _ConstructorCall extends Sink<dynamic> {
+class _ConstructorCall extends Sink<dynamic> implements BlocBase {
   final String str;
 
   _ConstructorCall(this.str, void Function(_ConstructorCall) onInit) {
@@ -169,4 +195,9 @@ class _ConstructorCall extends Sink<dynamic> {
 
   @override
   void close() => _events.add("closing $str");
+
+  @override
+  Future<void> dispose() async {
+    _events.add("closing $str");
+  }
 }
