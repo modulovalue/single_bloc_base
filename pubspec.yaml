@@ -1,12 +1,14 @@
 name: single_bloc_base
-description: A starting point for Dart libraries or applications.
-version: 0.1.0
-homepage: https://www.github.com/modulovalue/single_bloc_base.dart
+description: Platform agnostic Bloc interfaces + HookBloc for Dart and Flutter
+version: 1.0.0
+homepage: https://www.github.com/modulovalue/single_bloc_base
 author: Modestas Valauskas <valauskasmodestas+dartpub@gmail.com>
+issue_tracker: https://github.com/modulovalue/single_bloc_base/issues
 
 environment:
   sdk: '>=2.4.4 <3.0.0'
 
 dev_dependencies:
-  extra_pedantic: ^1.1.1
-  test: ^1.6.0
+  extra_pedantic: ^1.1.1+2
+  test: ^1.5.0
+  test_coverage: ^0.2.0

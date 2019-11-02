@@ -1,1 +1,0 @@
-/Applications/IntelliJ\ IDEA.app/Contents/MacOS/idea "`dirname "$0"`"

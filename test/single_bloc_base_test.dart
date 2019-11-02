@@ -2,17 +2,77 @@ import 'dart:async';
 import 'package:single_bloc_base/single_bloc_base.dart';
 import 'package:test/test.dart';
 
-List<String> events = [];
+List<String> _events = [];
 
 void main() {
   group("$BlocBase", () {
+    // Nothing to test
+    final _ = _BlocBase();
+  });
+
+  group("$InitBase", () {
     /// Nothing to test
-    final _BlocBase _ = _BlocBase();
+    final _ = _InitBase();
+  });
+
+  group("$InitBloc", () {
+    /// Nothing to test
+    final _ = _InitBloc();
+  });
+
+  group("$BaggedInitBloc", () {
+    test("bagState", () async {
+      int isDisposed = 0;
+      int isInitialized = 0;
+      final sut = _TestBaggedInitBlocBase();
+      sut.bagState(
+        _AnonTestInitBloc(
+          () => isDisposed++,
+          () => isInitialized++,
+        ),
+      );
+
+      await sut.init();
+      expect(isDisposed, 0);
+      expect(isInitialized, 1);
+      await sut.dispose();
+      expect(isDisposed, 1);
+      expect(isInitialized, 1);
+    });
+    test("bagBloc", () async {
+      int isDisposed = 0;
+      final sut = _TestBaggedInitBlocBase();
+      sut.bagBloc(_BlocBase(() => isDisposed++));
+
+      expect(isDisposed, 0);
+      await sut.dispose();
+      expect(isDisposed, 1);
+    });
+    test("disposeLater", () async {
+      int isDisposed = 0;
+      final _TestBaggedInitBlocBase sut = _TestBaggedInitBlocBase();
+      // ignore: invalid_use_of_protected_member
+      sut.disposeLater(() => isDisposed++);
+
+      expect(isDisposed, 0);
+      await sut.dispose();
+      expect(isDisposed, 1);
+    });
+    test("initLater", () async {
+      int isInitialized = 0;
+      final _TestBaggedInitBlocBase sut = _TestBaggedInitBlocBase();
+      // ignore: invalid_use_of_protected_member
+      sut.initLater(() => isInitialized++);
+
+      expect(isInitialized, 0);
+      await sut.init();
+      expect(isInitialized, 1);
+    });
   });
 
   group("$HookBloc", () {
     test("$_ConstructorCall", () async {
-      events = [];
+      _events = [];
       final bloc1 = _HookBlocBase1();
       final bloc2 = _HookBlocBase2();
 
@@ -21,7 +81,7 @@ void main() {
 
       await pumpEventQueue();
       scheduleMicrotask(() {
-        expect(events, [
+        expect(_events, [
           "pre dispose _HookBlocBase1",
           "post dispose _HookBlocBase1",
           "pre dispose _HookBlocBase2",
@@ -32,36 +92,28 @@ void main() {
       });
     });
   });
+}
 
-  group("$BaggedInitBloc", () {
-    test("bagState", () async {
-      int isDisposed = 0;
-      int isInitialized = 0;
-      final _TestBaggedInitBlocBase sut =
-          _TestBaggedInitBlocBase();
-      // ignore: invalid_use_of_protected_member
-      sut.bagState(_AnonTestInitBloc(
-          () => isDisposed++, () => isInitialized++));
+class _BlocBase implements BlocBase {
+  final void Function() _dispose;
 
-      await sut.init();
-      expect(isDisposed, 0);
-      expect(isInitialized, 1);
-      await sut.dispose();
-      expect(isDisposed, 1);
-      expect(isInitialized, 1);
-    });
-    test("disposeLater", () async {
-      int isDisposed = 0;
-      final _TestBaggedInitBlocBase sut =
-          _TestBaggedInitBlocBase();
-      // ignore: invalid_use_of_protected_member
-      sut.disposeLater(() => isDisposed++);
+  _BlocBase([this._dispose]);
 
-      expect(isDisposed, 0);
-      await sut.dispose();
-      expect(isDisposed, 1);
-    });
-  });
+  @override
+  Future<void> dispose() async => _dispose?.call();
+}
+
+class _InitBase extends InitBase {
+  @override
+  Future<void> init() async {}
+}
+
+class _InitBloc extends InitBloc {
+  @override
+  Future<void> dispose() async {}
+
+  @override
+  Future<void> init() async {}
 }
 
 class _AnonTestInitBloc extends InitBloc {
@@ -79,11 +131,6 @@ class _AnonTestInitBloc extends InitBloc {
 
 class _TestBaggedInitBlocBase extends BaggedInitBloc {}
 
-class _BlocBase extends BlocBase {
-  @override
-  Future<void> dispose() async {}
-}
-
 class _HookBlocBase1 extends HookBloc {
   // ignore: close_sinks
   final _ConstructorCall a =
@@ -91,9 +138,9 @@ class _HookBlocBase1 extends HookBloc {
 
   @override
   Future dispose() async {
-    events.add("pre dispose _HookBlocBase1");
+    _events.add("pre dispose _HookBlocBase1");
     await super.dispose();
-    events.add("post dispose _HookBlocBase1");
+    _events.add("post dispose _HookBlocBase1");
   }
 }
 
@@ -104,9 +151,9 @@ class _HookBlocBase2 extends HookBloc {
 
   @override
   Future dispose() async {
-    events.add("pre dispose _HookBlocBase2");
+    _events.add("pre dispose _HookBlocBase2");
     await super.dispose();
-    events.add("post dispose _HookBlocBase2");
+    _events.add("post dispose _HookBlocBase2");
   }
 }
 
@@ -121,5 +168,5 @@ class _ConstructorCall extends Sink<dynamic> {
   void add(dynamic data) {}
 
   @override
-  void close() => events.add("closing $str");
+  void close() => _events.add("closing $str");
 }

@@ -41,7 +41,7 @@ version
 **/doc/api/
 .dart_tool/
 .flutter-plugins
-.dart_tool/.packages
+.packages
 .pub-cache/
 .pub/
 build/
@@ -98,8 +98,6 @@ coverage/
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
-
-
 
 
 # See https://www.dartlang.org/guides/libraries/private-files

@@ -2,27 +2,22 @@ import 'package:single_bloc_base/single_bloc_base.dart';
 
 // ignore_for_file: unused_local_variable
 Future<void> main() async {
-  print("---------Simple Bloc---------");
   const simpleBloc = ExampleBloc();
   await simpleBloc.dispose();
 
-  print("---------Simple Init---------");
   const simpleInit = ExampleInit();
   await simpleInit.init();
 
-  print("---------Init Bloc---------");
-  const initializableBloc = ExampleBlocWithInit();
-  await initializableBloc.init();
-  await initializableBloc.dispose();
+  const initBloc = ExampleBlocWithInit();
+  await initBloc.init();
+  await initBloc.dispose();
 
-  print("--------Hook Bloc----------");
   final hookBloc = ExampleHookBloc();
   await hookBloc.dispose();
 
   final hookBloc2 = ExampleHookBloc();
   await hookBloc2.dispose();
 
-  print("---------Bagged Bloc---------");
   final baggedBloc = ExampleBaggedBloc(
     [const ExampleBloc(), ExampleHookBloc()],
     [const ExampleBlocWithInit()],

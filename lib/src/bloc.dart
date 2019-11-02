@@ -2,19 +2,20 @@ import 'dart:async';
 
 import 'package:meta/meta.dart';
 
-/// Base class for objects that can be disposed.
+/// Base interface for objects that can be disposed.
 abstract class BlocBase {
   Future<void> dispose() async {}
 }
 
-/// Base class for objects that can be initialized.
+/// Base interface for objects that can be initialized.
 abstract class InitBase {
   Future<void> init();
 }
 
-/// Base class for objects that can be initialized and disposed.
+/// Base interface for objects that can be initialized and disposed.
 abstract class InitBloc implements BlocBase, InitBase {}
 
+/// Base class for objects that can collect initialization and disposal methods.
 class BaggedInitBloc implements InitBloc {
   final List<Future<void> Function()> onInit = [];
 
@@ -58,26 +59,31 @@ class HookBloc implements BlocBase {
   static HookBloc _context;
 
   /// You must call [disposeSink] before the constructor is called.
-  /// That means calling HookBloc.disposeSink like the following example:
+  /// That means calling HookBloc.disposeSink like in the following example:
   ///
   /// ```
   /// final SomeObject object = SomeObject(onInit: HookBloc.disposeSink);
   /// ```
-  static void disposeSink(Sink sink) => disposeEffect(() async => sink.close());
+  static void disposeSink(Sink sink) {
+    disposeEffect(() async => sink.close());
+  }
 
   /// See [disposeSink]
-  static void disposeBloc(BlocBase bloc) => disposeEffect(bloc.dispose);
+  static void disposeBloc(BlocBase bloc) {
+    disposeEffect(bloc.dispose);
+  }
 
   /// See [disposeSink]
-  static void disposeEffect(Future<void> Function() effect) =>
-      scheduleMicrotask(() {
-        if (_context != null) {
-          _context.disposeLater(effect);
-        } else {
-          throw Exception(
-              "HookBloc.disposeSink used outside of class member contructor.");
-        }
-      });
+  static void disposeEffect(Future<void> Function() effect) {
+    scheduleMicrotask(() {
+      if (_context != null) {
+        _context.disposeLater(effect);
+      } else {
+        throw Exception(
+            "HookBloc.disposeSink used outside of class member contructor.");
+      }
+    });
+  }
 
   HookBloc() {
     _context = this;
