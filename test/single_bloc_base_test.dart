@@ -19,8 +19,6 @@ void main() async {
     });
   });
 
-  await pumpEventQueue(times: 2);
-
   group("$BlocBase", () {
     // Nothing to test
     final _ = _BlocBase();
